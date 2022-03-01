@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { signInUserService } from '../services/user/sign-in';
@@ -20,13 +20,9 @@ interface AuthContextData {
   user: User;
 }
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
 export const AuthContext = createContext({} as AuthContextData);
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User>();
   const isAuthenticated = !!user;
 
