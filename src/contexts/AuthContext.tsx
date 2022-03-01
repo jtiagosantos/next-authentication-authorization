@@ -1,7 +1,9 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { setCookie } from 'nookies';
+import { setCookie, parseCookies } from 'nookies';
 import { signInUserService } from '../services/user/sign-in';
+import { api } from '../services/axios/api';
+import { getLoggedUserDataService } from '../services/user/get-logged-user-data';
 
 export interface User {
   email: string;
@@ -26,6 +28,22 @@ export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User>();
   const isAuthenticated = !!user;
 
+  useEffect(() => {
+    (async () => {
+      const { 'nextauth.token': token } = parseCookies();
+
+      if (token) {
+        const userLogged = await getLoggedUserDataService();
+
+        setUser({
+          email: userLogged.email,
+          permissions: userLogged.permissions,
+          roles: userLogged.roles,
+        });
+      }
+    })();
+  }, []);
+
   const router = useRouter();
 
   const signIn = async ({ email, password }: SignInCredentials) => {
@@ -49,6 +67,8 @@ export const AuthProvider: React.FC = ({ children }) => {
       permissions: data.permissions,
       roles: data.roles,
     });
+
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     router.push('/dashboard');
   };
