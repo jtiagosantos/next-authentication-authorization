@@ -22,11 +22,13 @@ const Home = () => {
         type="text"
         value={email}
         onChange={({ target }) => setEmail(target.value)}
+        placeholder="E-mail"
       />
       <input
         type="password"
         value={password}
         onChange={({ target }) => setPassword(target.value)}
+        placeholder="Senha"
       />
       <button type="submit">Entrar</button>
     </form>
