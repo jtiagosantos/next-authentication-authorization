@@ -1,4 +1,5 @@
 import { createContext, ReactNode } from 'react';
+import { api } from '../services/axios/api';
 
 interface SignInCredentials {
   email: string;
@@ -20,7 +21,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const isAuthenticated = false;
 
   const signIn = async ({ email, password }: SignInCredentials) => {
-    console.log({ email, password });
+    try {
+      await api.post('sessions', {
+        email,
+        password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
