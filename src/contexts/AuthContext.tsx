@@ -2,8 +2,8 @@ import { createContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { setCookie, parseCookies } from 'nookies';
 import { signInUserService } from '../services/user/sign-in';
-import { api } from '../services/axios/api';
 import { getLoggedUserDataService } from '../services/user/get-logged-user-data';
+import { apiDefaults } from '../services/axios/api';
 
 export interface User {
   email: string;
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       roles: data.roles,
     });
 
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    apiDefaults.headers['Authorization'] = `Bearer ${token}`;
 
     router.push('/dashboard');
   };

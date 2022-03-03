@@ -1,5 +1,16 @@
-import axios, { AxiosError } from 'axios';
+import axios, {
+  AxiosRequestConfig,
+  AxiosRequestHeaders,
+  HeadersDefaults,
+  AxiosError,
+} from 'axios';
+
 import { parseCookies, setCookie } from 'nookies';
+
+interface SmartAxiosDefaults<D = any>
+  extends Omit<AxiosRequestConfig<D>, 'headers'> {
+  headers: HeadersDefaults & AxiosRequestHeaders;
+}
 
 let cookies = parseCookies();
 let isRefreshing = false;
@@ -11,6 +22,8 @@ export const api = axios.create({
     Authorization: `Bearer ${cookies['nextauth.token']}`,
   },
 });
+
+export const apiDefaults = api.defaults as SmartAxiosDefaults;
 
 api.interceptors.response.use(
   (response) => {
@@ -33,7 +46,6 @@ api.interceptors.response.use(
               refreshToken,
             })
             .then((response) => {
-              console.log(response);
               const { token } = response.data;
 
               const THIRTY_DAYS = 60 * 60 * 24 * 30;
@@ -52,7 +64,7 @@ api.interceptors.response.use(
                 },
               );
 
-              api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+              apiDefaults.headers['Authorization'] = `Bearer ${token}`;
 
               failedRequestsQueue.forEach((request) =>
                 request.onSuccess(token),
