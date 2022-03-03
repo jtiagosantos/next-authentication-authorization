@@ -6,6 +6,7 @@ import axios, {
 } from 'axios';
 
 import { parseCookies, setCookie } from 'nookies';
+import { signOut } from '../../contexts/AuthContext';
 
 interface SmartAxiosDefaults<D = any>
   extends Omit<AxiosRequestConfig<D>, 'headers'> {
@@ -94,7 +95,11 @@ api.interceptors.response.use(
             },
           });
         });
+      } else {
+        signOut();
       }
     }
+
+    return Promise.reject(error);
   },
 );

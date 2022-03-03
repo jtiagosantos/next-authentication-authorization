@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { setCookie, parseCookies } from 'nookies';
+import Router from 'next/router';
+import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import { signInUserService } from '../services/user/sign-in';
 import { getLoggedUserDataService } from '../services/user/get-logged-user-data';
 import { apiDefaults } from '../services/axios/api';
@@ -22,6 +22,13 @@ interface AuthContextData {
   user: User;
 }
 
+export function signOut() {
+  destroyCookie(undefined, 'nextauth.token');
+  destroyCookie(undefined, 'nextauth.refreshToken');
+
+  Router.push('/');
+}
+
 export const AuthContext = createContext({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }) => {
@@ -33,18 +40,20 @@ export const AuthProvider: React.FC = ({ children }) => {
       const { 'nextauth.token': token } = parseCookies();
 
       if (token) {
-        const userLogged = await getLoggedUserDataService();
+        try {
+          const userLogged = await getLoggedUserDataService();
 
-        setUser({
-          email: userLogged.email,
-          permissions: userLogged.permissions,
-          roles: userLogged.roles,
-        });
+          setUser({
+            email: userLogged.email,
+            permissions: userLogged.permissions,
+            roles: userLogged.roles,
+          });
+        } catch {
+          signOut();
+        }
       }
     })();
   }, []);
-
-  const router = useRouter();
 
   const signIn = async ({ email, password }: SignInCredentials) => {
     const data = await signInUserService({ email, password });
@@ -70,7 +79,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     apiDefaults.headers['Authorization'] = `Bearer ${token}`;
 
-    router.push('/dashboard');
+    Router.push('/dashboard');
   };
 
   return (
