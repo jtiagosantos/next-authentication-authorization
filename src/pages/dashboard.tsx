@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { api } from '../services/axios/api';
+import { setupAPIClient } from '../services/axios/api';
+import { api } from '../services/axios/apiClient';
+import { withSSRAuth } from '../utils/withSSRAuth';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -13,3 +15,12 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+export const GetServerSideProps = withSSRAuth(async (context) => {
+  const apiClient = setupAPIClient(context);
+  await apiClient.get('/me');
+
+  return {
+    props: {},
+  };
+});

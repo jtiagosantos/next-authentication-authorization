@@ -1,5 +1,5 @@
 import { SignInCredentials, User } from '../../contexts/AuthContext';
-import { api } from '../axios/api';
+import { api } from '../axios/apiClient';
 
 type SignInUserRequest = SignInCredentials;
 

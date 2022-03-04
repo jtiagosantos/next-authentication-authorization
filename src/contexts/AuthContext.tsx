@@ -3,7 +3,8 @@ import Router from 'next/router';
 import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import { signInUserService } from '../services/user/sign-in';
 import { getLoggedUserDataService } from '../services/user/get-logged-user-data';
-import { apiDefaults } from '../services/axios/api';
+import { SmartAxiosDefaults } from '../services/axios/api';
+import { api } from '../services/axios/apiClient';
 
 export interface User {
   email: string;
@@ -76,6 +77,8 @@ export const AuthProvider: React.FC = ({ children }) => {
       permissions: data.permissions,
       roles: data.roles,
     });
+
+    const apiDefaults = api.defaults as SmartAxiosDefaults;
 
     apiDefaults.headers['Authorization'] = `Bearer ${token}`;
 
