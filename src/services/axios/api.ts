@@ -7,6 +7,7 @@ import axios, {
 
 import { parseCookies, setCookie } from 'nookies';
 import { signOut } from '../../contexts/AuthContext';
+import { AuthTokenError } from '../errors/AuthTokenError';
 
 export interface SmartAxiosDefaults<D = any>
   extends Omit<AxiosRequestConfig<D>, 'headers'> {
@@ -73,9 +74,9 @@ export function setupAPIClient(contexto = undefined) {
                 );
                 failedRequestsQueue = [];
               })
-              .catch((error) => {
+              .catch((err) => {
                 failedRequestsQueue.forEach((request) =>
-                  request.onFailure(error),
+                  request.onFailure(err),
                 );
                 failedRequestsQueue = [];
 
@@ -103,6 +104,8 @@ export function setupAPIClient(contexto = undefined) {
         } else {
           if (process.browser) {
             signOut();
+          } else {
+            return Promise.reject(new AuthTokenError());
           }
         }
       }
