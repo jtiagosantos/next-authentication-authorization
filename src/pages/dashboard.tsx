@@ -1,16 +1,12 @@
 import { useEffect } from 'react';
+import { Can } from '../components/Can';
 import { useAuth } from '../hooks/useAuth';
-import { useCan } from '../hooks/useCan';
 import { setupAPIClient } from '../services/axios/api';
 import { api } from '../services/axios/apiClient';
 import { withSSRAuth } from '../utils/withSSRAuth';
 
 const Dashboard = () => {
   const { user } = useAuth();
-
-  const userCanSeeMetrics = useCan({
-    permissions: ['metrics.list'],
-  });
 
   useEffect(() => {
     api.get('/me').then((response) => console.log(response));
@@ -19,7 +15,9 @@ const Dashboard = () => {
   return (
     <>
       <h1>Dashboard: {user?.email}</h1>
-      {userCanSeeMetrics && <div>Métricas</div>}
+      <Can permissions={['metrics.list']}>
+        <div>Métricas</div>
+      </Can>
     </>
   );
 };
