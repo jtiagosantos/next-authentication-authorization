@@ -6,7 +6,7 @@ import { api } from '../services/axios/apiClient';
 import { withSSRAuth } from '../utils/withSSRAuth';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     api.get('/me').then((response) => console.log(response));
@@ -15,6 +15,9 @@ const Dashboard = () => {
   return (
     <>
       <h1>Dashboard: {user?.email}</h1>
+
+      <button onClick={signOut}>Sign out</button>
+
       <Can permissions={['metrics.list']}>
         <div>Métricas</div>
       </Can>
