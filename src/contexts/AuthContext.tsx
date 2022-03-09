@@ -53,7 +53,7 @@ export const AuthProvider: React.FC = ({ children }) => {
           break;
       }
     };
-  });
+  }, []);
 
   useEffect(() => {
     (async () => {
